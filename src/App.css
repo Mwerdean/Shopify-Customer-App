@@ -1,32 +1,51 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.Text-Field {
+  width: 100%;
+  height: 50px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-around;
 }
 
-.App-link {
-  color: #61dafb;
+.Text-Field > * {
+  width: 100%;
+  width: 49%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.Form > div {
+  margin-top: 15px;
+  height: 80px;
+}
+
+
+.Add-Student-Button {
+  width: 100%;
+  display: flex;
+  margin-right: 20px;
+  margin-top: 20px;
+  flex-direction: row-reverse;
+}
+
+.Add-Student-Button > * {
+  width: 15%;
+}
+
+.Add-Student-Section {
+  margin-top: 20px;
+}
+
+.Add-Student-Select {
+  width: 50%;
+  padding: 10px;
+}
+
+.Dynamic-Student-Name {
+  margin-left: 10px;
+}
+
+.Dynamic-Student-Name > div {
+  margin-bottom: 10px;
+}
+
+.Dynamic-Student-Name > input {
+  width: 100%;
+  height: 35px;
 }
