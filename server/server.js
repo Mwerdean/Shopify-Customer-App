@@ -81,9 +81,9 @@ app.post('/submitProduct', (req, res) => {
             ]
         }
     }
-    // axios.post(`https://${sk}:${ss}@basis-ed.myshopify.com/admin/products.json`, obj).then(res => {
-    //     console.log('done')
-    // }).catch(error => console.log('get product error', error))
+    axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/products.json`, obj).then(res => {
+        console.log('done')
+    }).catch(error => console.log('get product error', error))
 })
 
 // const path = require('path')
