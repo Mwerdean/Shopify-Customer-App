@@ -2,78 +2,31 @@ import React, { Component } from 'react'
 import { Page, Button, TextField, Select, ChoiceList, Tooltip, Link } from '@shopify/polaris'
 import { Redirect } from 'react-router-dom'
 import axios from 'axios'
+import schoolJSON from '../school.json'
+import skuJSON from '../sku.json'
 
 export default class Products extends Component {
     state = {
-        redirect: false,
-        product: '',
-        description: '',
-        selectedSchool: '',
-        productType: '',
         grade: [],
-        tax: 'false',
-        allSelected: true,
-        price: '',
-        stock: '',
+        SKU: 'Please Select a School and Prefix',
+        trackInventory: 'false',
         taxCredit: 'false',
         shipping: 'false',
-        trackInventory: 'false',
+        tax: 'false',
+        allSelected: true,
+        redirect: false,
+        selectedSchool: '',
+        description: '',
+        productType: '',
+        product: '',
         prefix: '',
-        SKU: 'Please Select a School and Prefix',
-        productSKU: {
-            'ATF: ': '2048-73012-7301-000',
-            'BK: ': '2052-73010-7311-000',
-            'CL: ': '2052-73010-7311-000',
-            'EC: ': '2001-73010-7311-000',
-            'SO: ': '2001-73010-7311-000',
-            'BP: ': '2001-73010-7311-000',
-            'FT: ': '2052-73010-7311-000',
-            'KG: ': '2048-73010-7305-000',
-            'LB: ': '2052-73010-7311-000',
-            'ME: ': '2052-73010-7311-000',
-            'EV: ': '2052-73010-7311-000',
-            'SD: ': '2036-43020-7311-000',
-            'SP: ': '2001-73010-7311-000',
-            'TP: ': '2052-73010-7311-000',
-            'TE: ': '2052-73010-7311-000',
-            'TX: ': '2048-20180-7311-000',
-            'OP: ': '2052-73010-7311-000',
-        },
-        schoolID: {
-            'BASIS San Antonio Medical Center Primary': '101',
-            'BASIS San Antonio North Central Primary': '102',
-            'BASIS San Antonio Shevano Campus': '103',
-            'BASIS Washington DC': '201',
-            'BASIS Ahwatukee': '401',
-            'BASIS Chandler': '402',
-            'BASIS Chandler Primary South': '403',
-            'BASIS Chandler Primary North': '404',
-            'BASIS Flagstaff': '405',
-            'BASIS Goodyear': '406',
-            'BASIS Mesa': '407',
-            'BASIS Oro Valley': '408',
-            'BASIS Peoria': '409',
-            'BASIS Phoenix': '410',
-            'BASIS Phoenix Central': '411',
-            'BASIS Prescott': '412',
-            'BASIS Scottsdale': '413',
-            'BASIS Scottsdale Primary East': '414',
-            'BASIS Tucson North': '415',
-            'BASIS Tucson Primary': '416',
-            'BASIS Goodyear Primary': '417',
-            'BASIS Oro Valley Primary': '418',
-            'BASIS Peoria Primary': '419',
-            'BASIS Phoenix South Primary': '420',
-            'BASIS Phoenix Primary': '421',
-            'BASIS Scottsdale Primary West': '422',
-            'BASIS Baton Rouge': '701',
-        },
-        errorPrefix: '',
-        errorPrice: '',
+        price: '',
+        stock: '',
         errorDescription: '',
-        errorProduct: '',
-        errorSchool: '',
         errorProductType: '',
+        errorProduct: '',
+        errorPrefix: '',
+        errorSchool: '',
         errorPrice: '',
         errorGrade: '',
         errorStock: '',
@@ -130,16 +83,16 @@ export default class Products extends Component {
         if(this.state.selectedSchool != '' && this.state.prefix != '') {
             let SKU
             let schoolID
-            let keys = Object.keys(this.state.productSKU)
-            let schoolKeys = Object.keys(this.state.schoolID)
+            let keys = Object.keys(skuJSON)
+            let schoolKeys = Object.keys(schoolJSON)
             for(let i=0; i<keys.length; i++) {
                 if(this.state.prefix === keys[i]) {
-                    SKU = this.state.productSKU[keys[i]]
+                    SKU = skuJSON[keys[i]]
                 }
             }
             for(let i=0; i<schoolKeys.length; i++) {
                 if(this.state.selectedSchool === schoolKeys[i]) {
-                    schoolID = this.state.schoolID[schoolKeys[i]]
+                    schoolID = schoolJSON[schoolKeys[i]]
                 }
             }
             console.log(this.state.selectedSchool, this.state.prefix)

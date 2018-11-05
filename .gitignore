@@ -22,3 +22,5 @@ yarn-error.log*
 
 .env
 
+/src/sku.json
+/src/school.json
