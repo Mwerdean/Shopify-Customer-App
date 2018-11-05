@@ -59,6 +59,31 @@ app.post('/submitNewCustomer', (req, res) => {
     }).catch(error => console.log('get customer error', error))
 })
 
+app.get('/submitProduct', (req, res) => {
+    let obj = {
+        "product": {
+            "title": "Late Bird - Monthly Payment",
+            "body_html": "Late Bird is a voluntary, fee-based extension of the school day for students.",
+            "vendor": "BASIS Scottsdale Primary - West Campus",
+            "product_type": "",
+            "tags": "BASIS Chandler Primary North, Kindergarten",
+            "variants": [
+                {
+                    "option1": "First",
+                    "price": "10.00",
+                    "sku": "123",
+                    "taxable": false,
+                    "requires_shipping": false,
+                }
+            ]
+        }
+    }
+    console.log('1')
+    // axios.post(`https://${sk}:${ss}@basis-ed.myshopify.com/admin/products.json`, obj).then(res => {
+    //     console.log('done')
+    // }).catch(error => console.log('get product error', error))
+})
+
 // const path = require('path')
 // app.get('*', (req, res) => {
 //     res.sendFile(path.join(__dirname + '..build/index.html'))

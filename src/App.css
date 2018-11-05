@@ -24,8 +24,11 @@
   flex-direction: row-reverse;
 }
 
-.Add-Student-Button > * {
+
+
+.Add-Student-Button > Button {
   width: 15%;
+  margin-right: 10px;
 }
 
 .Add-Student-Section {
@@ -48,4 +51,47 @@
 .Dynamic-Student-Name > input {
   width: 100%;
   height: 35px;
+}
+
+.Dynamic-Options > * {
+  width: 100%;
+}
+
+.Flex {
+  display: flex;
+}
+
+.Choice-List > div {
+  margin: 30px;
+}
+
+.Body > * {
+  margin-top: 10px;
+}
+
+.Tooltip {
+  width: 10%;
+  margin-left: -10%;
+}
+
+.Fee {
+  width: 10%;
+  margin-left: -20%;
+}
+
+.Stock-Quantity {
+  padding-top: 20px;
+  width:100px;
+}
+
+.Product-Submit {
+  margin: 20px 0px 50px 0px;
+  display: flex;
+  width: 100%;
+  flex-direction: row-reverse;
+
+}
+
+.Product-Submit > * {
+  width: 100px;
 }
