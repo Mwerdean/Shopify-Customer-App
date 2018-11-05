@@ -185,8 +185,22 @@ export default class Products extends Component {
             }
             console.log(canSubmit)
             if(canSubmit) {
-                console.log('here')
-                axios.get('http://localhost:3455/submitProduct').then(res => {
+                let obj = {
+                    "title": this.state.prefix + this.state.product,
+                    "desription": this.state.description,
+                    "school": this.state.school,
+                    "product-type": this.state.productType,
+                    "price": this.state.price,
+                    "SKU": this.state.SKU,
+                    "grade": this.state.grade,
+                    "tax-credit": this.state.taxCredit,
+                    "shipping": this.state.shipping,
+                    "tax": this.state.tax,
+                    "track-inventory": this.state.trackInventory,
+                    "stock": this.state.stock
+
+                }                
+                axios.post('http://localhost:3455/submitProduct', obj).then(res => {
                     console.log(res.data)
                 })
             }

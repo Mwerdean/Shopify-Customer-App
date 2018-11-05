@@ -12,6 +12,7 @@ app.use(express.static(`${__dirname}/../build`))
 require('dotenv').config()
 const sk = process.env.SHOPIFY_API_KEY
 const ss = process.env.SHOPIFY_API_SECRET
+const store = process.env.STORE
 
 app.post('/submitNewCustomer', (req, res) => {
     console.log('New Customer Data', req.body)
@@ -55,11 +56,13 @@ app.post('/submitNewCustomer', (req, res) => {
         )
     }
 
-    axios.post(`https://${sk}:${ss}@basis-ed.myshopify.com/admin/customers.json`, obj).then(res => {
+    axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/customers.json`, obj).then(res => {
     }).catch(error => console.log('get customer error', error))
 })
 
-app.get('/submitProduct', (req, res) => {
+app.post('/submitProduct', (req, res) => {
+    console.log(req.body)
+
     let obj = {
         "product": {
             "title": "Late Bird - Monthly Payment",
@@ -78,7 +81,6 @@ app.get('/submitProduct', (req, res) => {
             ]
         }
     }
-    console.log('1')
     // axios.post(`https://${sk}:${ss}@basis-ed.myshopify.com/admin/products.json`, obj).then(res => {
     //     console.log('done')
     // }).catch(error => console.log('get product error', error))
