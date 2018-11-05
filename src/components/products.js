@@ -183,12 +183,12 @@ export default class Products extends Component {
                 this.setState({ errorPrefix: 'Please select a catagory' })
                 canSubmit=false
             }
-            console.log(canSubmit)
+            console.log(canSubmit, this.state.school)
             if(canSubmit) {
                 let obj = {
                     "title": this.state.prefix + this.state.product,
-                    "desription": this.state.description,
-                    "school": this.state.school,
+                    "description": this.state.description,
+                    "school": this.state.selectedSchool,
                     "product-type": this.state.productType,
                     "price": this.state.price,
                     "SKU": this.state.SKU,
@@ -330,55 +330,55 @@ export default class Products extends Component {
                                 },
                                 {
                                     label: 'Kindergarten',
-                                    value: 'K',
+                                    value: 'Kindergarten',
                                 },
                                 {
                                     label: '1st Grade',
-                                    value: '1',
+                                    value: '1st Grade',
                                 },
                                 {
                                     label: '2nd Grade',
-                                    value: '2',
+                                    value: '2nd Grade',
                                 },
                                 {
                                     label: '3rd Grade',
-                                    value: '3',
+                                    value: '3rd Grade',
                                 },
                                 {
                                     label: '4th Grade',
-                                    value: '4',
+                                    value: '4th Grade',
                                 },
                                 {
                                     label: '5th Grade',
-                                    value: '5',
+                                    value: '5th Grade',
                                 },
                                 {
                                     label: '6th Grade',
-                                    value: '6',
+                                    value: '6th Grade',
                                 },
                                 {
                                     label: '7th Grade',
-                                    value: '7',
+                                    value: '7th Grade',
                                 },
                                 {
                                     label: '8th Grade',
-                                    value: '8',
+                                    value: '8th Grade',
                                 },
                                 {
                                     label: '9th Grade',
-                                    value: '9',
+                                    value: '9th Grade',
                                 },
                                 {
                                     label: '10th Grade',
-                                    value: '10',
+                                    value: '10th Grade',
                                 },
                                 {
                                     label: '11th Grade',
-                                    value: '11',
+                                    value: '11th Grade',
                                 },
                                 {
                                     label: '12th Grade',
-                                    value: '12',
+                                    value: '12th Grade',
                                 },
                                 ]}
                                 selected={this.state.grade}

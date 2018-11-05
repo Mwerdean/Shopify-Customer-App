@@ -62,27 +62,45 @@ app.post('/submitNewCustomer', (req, res) => {
 
 app.post('/submitProduct', (req, res) => {
     console.log(req.body)
-
-    let obj = {
+    const obj = req.body
+    let product = {
         "product": {
-            "title": "Late Bird - Monthly Payment",
-            "body_html": "Late Bird is a voluntary, fee-based extension of the school day for students.",
-            "vendor": "BASIS Scottsdale Primary - West Campus",
-            "product_type": "",
-            "tags": "BASIS Chandler Primary North, Kindergarten",
+            "title": obj.title,
+            "body_html": obj.description,
+            "vendor": obj.school,
+            "product_type": obj['product-type'],
+            "tags": `${obj.school},${ obj.grade.join() }${obj['tax-credit'][0] ? ',tax credit' : ''}`,
             "variants": [
                 {
-                    "option1": "First",
-                    "price": "10.00",
-                    "sku": "123",
-                    "taxable": false,
-                    "requires_shipping": false,
+                    "option1": obj.title,
+                    "price": obj.price,
+                    "sku": obj.SKU,
+                    "taxable": JSON.parse(obj.tax),
+                    "inventory_management": `${obj['track-inventory'][0] ? 'shopify' : ''}`,
+                    "requires_shipping": JSON.parse(obj.tax),
                 }
             ]
         }
     }
-    axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/products.json`, obj).then(res => {
-        console.log('done')
+    axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/products.json`, product).then(response => {
+        console.log(res.data)
+        console.log(response.data.product.variants[0].id)
+        const id = response.data.product.variants[0].inventory_item_id
+        res.send('ok')
+
+        if(obj['track-inventory'][0]) {
+            axios.get(`https://${sk}:${ss}@${store}.myshopify.com/admin/inventory_levels.json?inventory_item_ids=${id}`).then(response => {
+                console.log(response.data)
+                const inventory = {
+                    "inventory_item_id": id,
+                    "available": obj.stock,
+                    "location_id": response.data.inventory_levels[0].location_id
+                }
+                axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/inventory_levels/set.json`, inventory).then(response => {
+                    console.log(response.data)
+                }).catch(error => console.log('get product error', error))
+            })
+        }
     }).catch(error => console.log('get product error', error))
 })
 
@@ -90,6 +108,7 @@ app.post('/submitProduct', (req, res) => {
 // app.get('*', (req, res) => {
 //     res.sendFile(path.join(__dirname + '..build/index.html'))
 // })
+
 
 
 
