@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Page, Button, TextField, Select, ChoiceList, Tooltip, Link } from '@shopify/polaris'
+import { Page, Button, TextField, Select, ChoiceList, Tooltip, Link, Spinner } from '@shopify/polaris'
 import { Redirect } from 'react-router-dom'
 import axios from 'axios'
 import schoolJSON from '../school.json'
@@ -8,13 +8,16 @@ import skuJSON from '../sku.json'
 export default class Products extends Component {
     state = {
         grade: [],
-        SKU: 'Please Select a School and Prefix',
+        SKU: 'Please Select a Catagory and School',
         trackInventory: 'false',
         taxCredit: 'false',
         shipping: 'false',
         tax: 'false',
         allSelected: true,
         redirect: false,
+        continue: false,
+        loading: false,
+        restart: false,
         selectedSchool: '',
         description: '',
         productType: '',
@@ -138,6 +141,7 @@ export default class Products extends Component {
             }
             console.log(canSubmit, this.state.school)
             if(canSubmit) {
+                this.setState({ continue: true, loading: true })
                 let obj = {
                     "title": this.state.prefix + this.state.product,
                     "description": this.state.description,
@@ -155,10 +159,43 @@ export default class Products extends Component {
                 }                
                 axios.post('http://localhost:3455/submitProduct', obj).then(res => {
                     console.log(res.data)
+                    this.setState({ loading: false, restart: true })
                 })
             }
 
         })
+    }
+
+    continue = () => {
+        this.setState({
+            grade: [],
+            SKU: 'Please Select a Catagory and School',
+            trackInventory: 'false',
+            taxCredit: 'false',
+            shipping: 'false',
+            tax: 'false',
+            allSelected: true,
+            redirect: false,
+            continue: false,
+            loading: false,
+            restart: false,
+            selectedSchool: '',
+            description: '',
+            productType: '',
+            product: '',
+            prefix: '',
+            price: '',
+            stock: '',
+            errorDescription: '',
+            errorProductType: '',
+            errorProduct: '',
+            errorPrefix: '',
+            errorSchool: '',
+            errorPrice: '',
+            errorGrade: '',
+            errorStock: '',
+        })
+        window.scrollTo(0,0)
     }
 
     render() {
@@ -408,7 +445,9 @@ export default class Products extends Component {
                         </div>
                     </div>
                 </div>
-                <div className='Product-Submit'><Button primary onClick={this.submit}>Submit</Button></div>
+                {!this.state.continue && <div className='Product-Submit'><Button primary onClick={this.submit}>Submit</Button></div>}
+                {this.state.loading && <div className='Product-Submit'><Spinner size="large" color="teal"/></div>}
+                {this.state.restart && <div className='Product-Submit'><Button primary onClick={this.continue}>Continue</Button></div>}
             </Page>
         )
     }

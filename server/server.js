@@ -69,14 +69,14 @@ app.post('/submitProduct', (req, res) => {
             "body_html": obj.description,
             "vendor": obj.school,
             "product_type": obj['product-type'],
-            "tags": `${obj.school},${ obj.grade.join() }${obj['tax-credit'][0] ? ',tax credit' : ''}`,
+            "tags": `${obj.school},${ obj.grade.join() }${obj['tax-credit'][0] !== 'false' ? ',tax credit' : ''}`,
             "variants": [
                 {
                     "option1": obj.title,
                     "price": obj.price,
                     "sku": obj.SKU,
                     "taxable": JSON.parse(obj.tax),
-                    "inventory_management": `${obj['track-inventory'][0] ? 'shopify' : ''}`,
+                    "inventory_management": `${obj['track-inventory'] !== 'false' ? 'shopify' : ''}`,
                     "requires_shipping": JSON.parse(obj.tax),
                 }
             ]
@@ -88,7 +88,7 @@ app.post('/submitProduct', (req, res) => {
         const id = response.data.product.variants[0].inventory_item_id
         res.send('ok')
 
-        if(obj['track-inventory'][0]) {
+        if(obj['track-inventory'] !== 'false') {
             axios.get(`https://${sk}:${ss}@${store}.myshopify.com/admin/inventory_levels.json?inventory_item_ids=${id}`).then(response => {
                 console.log(response.data)
                 const inventory = {
