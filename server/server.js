@@ -5,6 +5,7 @@ const cors = require('cors')
 const sql = require('mssql')
 const app = express()
 
+
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static(`${__dirname}/../build`))
@@ -19,11 +20,24 @@ app.post('/submitNewCustomer', (req, res) => {
 
     let obj = {
         "customer": {
-            "first_name": req.body.firstname,
-            "last_name": req.body.lastname,
+            "first_name": req.body.first_name,
+            "last_name": req.body.last_name,
             "email": req.body.email,
             "verified_email": true,
-            "metafields": getMetafields()
+            "phone": req.body.phone,
+            "addresses": [
+                {
+                    "address1": req.body.address1,
+                    "address2": req.body.address2,
+                    "city": req.body.city,
+                    "province": "Arizona",
+                    "zip": req.body.zip,
+                    "last_name": req.body.last_name,
+                    "first_name": req.body.first_name,
+                    "country": "United States"
+                }
+            ],
+            "metafields": getMetafields()   
         }
     }
 
@@ -44,7 +58,7 @@ app.post('/submitNewCustomer', (req, res) => {
                 "namespace": "children_names"
               },
               {
-                "key": "child" + (req.body.students[i].id + 1) + "school",
+                "key": "child" + (req.body.students[i].id + 1) + "_school",
                 "value": req.body.students[i].school,
                 "value_type": "string",
                 "namespace": "children_school"
@@ -55,14 +69,25 @@ app.post('/submitNewCustomer', (req, res) => {
          arr   
         )
     }
-
-    axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/customers.json`, obj).then(res => {
-    }).catch(error => console.log('get customer error', error))
+    console.log(obj.customer)
+    console.dir("here", obj.customer.addresses[0])
+    res.send('ok')
+    axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/customers.json`, obj).then(response => {
+    }).catch(error => console.log('get customer error'))
 })
 
 app.post('/submitProduct', (req, res) => {
     console.log(req.body)
     const obj = req.body
+    let image
+    if(obj.school === 'BASIS Chandler Primary North') {
+        image = 'https://s3-us-west-1.amazonaws.com/thene/chandler.png'
+    } else if (obj.school === 'BASIS Ahwatukee') {
+        image = 'https://s3-us-west-1.amazonaws.com/thene/ahwatukee.png'
+    } else if (obj.school === 'BASIS Scottsdale Primary - West Campus') {
+        image = 'https://s3-us-west-1.amazonaws.com/thene/scottsdale.png'
+    }
+
     let product = {
         "product": {
             "title": obj.title,
@@ -70,6 +95,11 @@ app.post('/submitProduct', (req, res) => {
             "vendor": obj.school,
             "product_type": obj['product-type'],
             "tags": `${obj.school},${ obj.grade.join() }${obj['tax-credit'][0] !== 'false' ? ',tax credit' : ''}`,
+            "images": [
+                {
+                    "src": image
+                }
+            ],
             "variants": [
                 {
                     "option1": obj.title,

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Page, FormLayout, TextField, Button, Layout, Card, Select } from '@shopify/polaris';
+import { Page, FormLayout, TextField, Button, Layout, Card, Select, Tooltip, Link } from '@shopify/polaris';
 import { Redirect } from 'react-router-dom'
 import '../App.css';
 import axios from 'axios';
@@ -9,16 +9,25 @@ class Customer extends Component {
     value: '',
     value2: '',
     value3: '',
-    value4: '',
     value5: '',
     isStudentAdded: false,
     studentCount: 0,
-    selectedGrade: 'Kindergarten',
-    selectedSchool: 'BASIS Chandler Primary North',
+    selectedGrade: '',
+    selectedSchool: '',
     dynamicValue: '',
     dynamicArr: [],
     redirect: false,
     submit: true,
+    address1: '',
+    address2: '',
+    zip: '',
+    city: '',
+    errorFirst: '',
+    errorLast: '',
+    errorEmail: '',
+    errorStudentName: '',
+    errorGrade: '',
+    errorSchool: ''
   }
 
   handleChange = (value) => {
@@ -30,8 +39,17 @@ class Customer extends Component {
   handleChange3 = (value) => {
     this.setState({ value3: value })
   }
-  handleChange4 = (value) => {
-    this.setState({ value4: value })
+  handleAddress1Change = (value) => {
+    this.setState({ address1: value })
+  }
+  handleAddress2Change = (value) => {
+    this.setState({ address2: value })
+  }
+  handleZipChange = (value) => {
+    this.setState({ zip: value })
+  }
+  handleCityChange = (value) => {
+    this.setState({ city: value })
   }
   handleChange5 = (value) => {
     this.setState({ value5: value })
@@ -56,11 +74,21 @@ class Customer extends Component {
     } 
     this.setState({ studentCount: this.state.studentCount + 1})
     let arr = this.state.dynamicArr
-    arr.push({id: this.state.studentCount, value: '', grade: 'K', school: 'BASIS Chandler Primary North'})
+    arr.push({id: this.state.studentCount, value: '', grade: '', school: ''})
     this.setState({dynamicArr: arr})
     console.log(this.state.dynamicArr)
   
   }
+  
+  cancelStudent = (e, i) => {
+    let arr = this.state.dynamicArr
+    arr.splice(i, 1)
+    for(let i=0; i<arr.length; i++) {
+      arr[i].id = i
+    }
+    this.setState({ dynamicArr: arr, studentCount: this.state.studentCount -1 })
+  }
+
   handleDynamicChange = (e, i) => {
     let arr = this.state.dynamicArr
     arr[i].value = e.target.value
@@ -68,32 +96,66 @@ class Customer extends Component {
   }
 
   handleSubmit = () => {
-    const obj = {
-      'firstname': this.state.value,
-      'lastname': this.state.value2,
-      'email': this.state.value3,
-      'address': this.state.value4,
-      'phonenumber': this.state.value5,
-      'students': this.state.dynamicArr
-      
+    this.setState({ errorFirst: '', errorLast: '', errorEmail: '', errorGrade: '', errorSchool: '', errorStudentName: ''})
+    let canSubmit = true
+    if(!this.state.value) {
+      this.setState({ errorFirst: 'Please enter a first name' })
+      canSubmit = false
     }
-    axios.post(`http://localhost:3455/submitNewCustomer`, obj).then(res => {
-      console.log(res.data)
-    })   
+    if(!this.state.value2) {
+      this.setState({ errorLast: 'Please enter a last name' })
+      canSubmit = false
+    }
+    if(!this.state.value3) {
+      this.setState({ errorEmail: 'Please enter an email' })
+      canSubmit = false
+    }
+    if(this.state.dynamicArr.length > 0) {
+      for(let i = 0; i<this.state.dynamicArr.length; i++) {
+        if(!this.state.dynamicArr[i].value) {
+          this.setState({ errorStudentName: 'Please enter a student name'})
+          canSubmit = false
+        }
+        if(!this.state.dynamicArr[i].school) {
+          this.setState({ errorSchool: 'Please enter a school'})
+          canSubmit = false
+        }
+        if(!this.state.dynamicArr[i].grade) {
+          this.setState({ errorGrade: 'Please enter a grade'})
+          canSubmit = false
+        }
+      }
+    }
+
+    if(canSubmit) {
+      const obj = {
+        'first_name': this.state.value,
+        'last_name': this.state.value2,
+        'email': this.state.value3,
+        'phone': this.state.value5,
+        "address1": this.state.address1,
+        "address2": this.state.address2,
+        "city": this.state.city,
+        "zip": this.state.zip,
+        'students': this.state.dynamicArr
+      }
+      axios.post(`http://localhost:3455/submitNewCustomer`, obj).then(res => {
+        console.log(res.data)
+      })   
+    }
   }
 
   handleRouteChange = () => {
       this.setState({redirect: true})
   }
 
-
   render() {
-if(this.state.redirect) {
-    return <Redirect to={{pathname: '/products'}} />
-}
+    if(this.state.redirect) {
+        return <Redirect to={{pathname: '/products'}} />
+    }
 
-    let addStudentSection = []
     const options = [
+      {label: 'Select a grade', value: ''},
       {label: 'Kindergarten', value: 'K'},
       {label: '1st Grade', value: '1'},
       {label: '2nd Grade', value: '2'},
@@ -101,12 +163,20 @@ if(this.state.redirect) {
       {label: '4th Grade', value: '4'},
       {label: '5th Grade', value: '5'},
       {label: '6th Grade', value: '6'},
+      {label: '6th Grade', value: '7'},
+      {label: '6th Grade', value: '8'},
+      {label: '6th Grade', value: '9'},
+      {label: '6th Grade', value: '10'},
+      {label: '6th Grade', value: '11'},
+      {label: '6th Grade', value: '12'},
     ];
     const options2 = [
+      {label: 'Select a school', value: ''},
       {label: 'BASIS Chandler Primary North', value: 'BASIS Chandler Primary North'},
       {label: 'BASIS Scottsdale Primary West', value: 'BASIS Scottsdale Primary - West Campus'},
       {label: 'BASIS Ahwatukee', value: 'BASIS Ahwatukee'},
     ];
+    let addStudentSection = []
     for(let i = 0; i<this.state.studentCount; i++) {
       addStudentSection.push(
         <div key={i} className='Add-Student-Section'>
@@ -117,9 +187,11 @@ if(this.state.redirect) {
             >
             <Card sectioned>
               <FormLayout>
-                <div className='Dynamic-Student-Name'>
-                  <div>Enter Student Name</div>
-                  <input  value={this.state.dynamicArr[i].value} onChange={e => this.handleDynamicChange(e, i)}/>
+                <div className='Flex Dynamic-Options'>
+                  <TextField label="Enter Student Name" value={this.state.dynamicArr[i].value} onChange={e=> this.handleDynamicChange(e, i)} error={this.state.errorStudentName} />
+                  <div className='Close'>
+                    <div onClick={e => this.cancelStudent(e, i)} className="X">X</div>
+                  </div>
                 </div>
                 <div className='Add-Student-Select'>
                   <Select
@@ -127,6 +199,7 @@ if(this.state.redirect) {
                     options={options}
                     onChange={(e) => this.handleSelectGradeChange(e, i)}
                     value={this.state.dynamicArr[i].grade}
+                    error={this.state.errorGrade}
                   />
                 </div>
                 <div className='Add-Student-Select'>
@@ -135,6 +208,7 @@ if(this.state.redirect) {
                     options={options2}
                     onChange={(e) => this.handleSelectSchoolChange(e, i)}
                     value={this.state.dynamicArr[i].school}
+                    error={this.state.errorSchool}
                   />
                 </div>
               </FormLayout>
@@ -151,7 +225,7 @@ if(this.state.redirect) {
         breadcrumbs={[{content: 'Products', url: '/products'}]}
         title="Add New Parent"
         primaryAction={{content: 'Add Product', disabled: false, onAction: this.handleRouteChange}}
-        secondaryActions={[{content: 'Duplicate'}, {content: 'View on your store'}]}
+        secondaryActions={[ {content: '* These fields are required'}]}
         pagination={{
           hasPrevious: true,
           hasNext: true,
@@ -160,33 +234,61 @@ if(this.state.redirect) {
       <div className='Form'>
         <div className='Text-Field'>
           <TextField
-          label="Enter Customer First Name"
+          label="First Name *"
           value={this.state.value}
           onChange={this.handleChange}
+          error={this.state.errorFirst}
         />
           <TextField
-          label="Enter Customer Last Name"
+          label="Last Name *"
           value={this.state.value2}
           onChange={this.handleChange2}
+          error={this.state.errorLast}
         />
         </div>
         <div>
           <TextField
-          label="Enter Customer Email Address"
+          label="Email Address *"
           value={this.state.value3}
           onChange={this.handleChange3}
+          error={this.state.errorEmail}
+          />
+        </div>
+        <div className='Flex Dynamic-Options'>
+          <TextField
+          label="Address Line 1"
+          value={this.state.address1}
+          onChange={this.handleAddress1Change}
+          />
+            <div className='Tooltip'>
+                <Tooltip content="Address and phone number are not required, but are appreciated.">
+                    <Link>Learn More</Link>
+                </Tooltip>
+            </div>
+        </div>
+        <div>
+          <TextField
+          label="Address Line 2 (Apartment, suite, unit, building, floor, etc.)"
+          value={this.state.address2}
+          onChange={this.handleAddress2Change}
+          />
+        </div>
+        <div className='Flex Address'>
+          <TextField
+          label="ZIP / Postal code"
+          value={this.state.zip}
+          onChange={this.handleZipChange}
+          />
+          <TextField
+          label="City"
+          value={this.state.city}
+          onChange={this.handleCityChange}
           />
         </div>
         <div>
           <TextField
-          label="Enter Customer Home Address (Optional)"
-          value={this.state.value4}
-          onChange={this.handleChange4}
-          />
-        </div>
-        <div>
-          <TextField
-          label="Enter Customer Phone Number (Optional)"
+          label="Phone Number"
+          type="number"
           value={this.state.value5}
           onChange={this.handleChange5}
           />
@@ -199,7 +301,7 @@ if(this.state.redirect) {
             }
         <div className='Add-Student-Button'>
           {this.state.submit && <Button primary onClick={this.handleSubmit}>Submit</Button>}
-          <Button primary onClick={this.handleAddStudent}>Add Student</Button>
+          <Button secondary onClick={this.handleAddStudent}>Add Student</Button>
         </div>
       </Page>
     );
