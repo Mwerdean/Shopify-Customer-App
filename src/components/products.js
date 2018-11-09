@@ -33,6 +33,8 @@ export default class Products extends Component {
         errorPrice: '',
         errorGrade: '',
         errorStock: '',
+        variantCount: 0,
+        variants: [],
     }
 
     handleRouteChange = () => {
@@ -80,6 +82,24 @@ export default class Products extends Component {
     }
     handleStockChange = (value) => {
         this.setState({ stock: value })
+    }
+    handleVariantTitleChange = (e, i) => {
+        let arr = this.state.variants
+        arr[i].title = e
+        this.setState({ variants: arr }, () => console.log(this.state.variants))
+    }
+    handleVariantPriceChange = (e, i) => {
+        let arr  = this.state.variants
+        arr[i].price = e
+        this.setState({ variants: arr}, () => console.log(this.state.variants))
+    }
+
+
+    addVariant = () => {
+            this.setState({ variantCount: this.state.variantCount + 1 })
+            let arr = this.state.variants
+            arr.push({ id: this.state.variantCount, title: '', price: '', errorTitle: '', errorPrice: '' })
+            this.setState({ variants: arr })
     }
 
     setSKU = () => {
@@ -139,6 +159,23 @@ export default class Products extends Component {
                 this.setState({ errorPrefix: 'Please select a catagory' })
                 canSubmit=false
             }
+            const variants = this.state.variants
+            for(let i = 0; i<variants.length; i++) {
+                let c = this.state.variants
+                c[i].errorTitle = ''
+                c[i].errorPrice = ''
+                this.setState({ variants: c })
+                if(!variants[i].title) {
+                    c[i].errorTitle = 'Please Enter a Variant Title'
+                    this.setState({ variants: c})
+                    canSubmit=false
+                }
+                if(!variants[i].price) {
+                    c[i].errorPrice= 'Please Enter a Variant Price'
+                    this.setState({ variants: c})
+                    canSubmit=false
+                }
+            }
             console.log(canSubmit, this.state.school)
             if(canSubmit) {
                 this.setState({ continue: true, loading: true })
@@ -154,7 +191,8 @@ export default class Products extends Component {
                     "shipping": this.state.shipping,
                     "tax": this.state.tax,
                     "track-inventory": this.state.trackInventory,
-                    "stock": this.state.stock
+                    "stock": this.state.stock,
+                    "variants": this.state.variants
 
                 }                
                 axios.post('http://localhost:3455/submitProduct', obj).then(res => {
@@ -194,6 +232,8 @@ export default class Products extends Component {
             errorPrice: '',
             errorGrade: '',
             errorStock: '',
+            variantCount: 0,
+            variants: [],
         })
         window.scrollTo(0,0)
     }
@@ -212,7 +252,7 @@ export default class Products extends Component {
             {label: 'Please Select a Product Type', value: ''},
             {label: 'Books', value: 'Books'},
             {label: 'Late Bird', value: 'Late Bird'},
-            {label: 'Extracurricular Activities', value: 'Clubs'},
+            {label: 'Extracurricular Activities', value: 'Club'},
             {label: 'Fee', value: 'Fee'},
             {label: 'Optional', value: 'Optional Supplies'},
         ]
@@ -236,6 +276,30 @@ export default class Products extends Component {
             {label: 'Textbooks (Replacement)', value: 'TX: '},
             {label: 'Optional Items (not applicable elsewhere)', value: 'OP: '},
         ]
+
+        let addVariantSection = []
+        for(let i = 0; i<this.state.variantCount; i++) {
+            addVariantSection.push(
+                <div key={i}>
+                     <div className='Flex Dynamic-Options'>
+                        <TextField placeholder="E.g., January or Small" error={this.state.variants[i].errorTitle} label={`Variant ${i+1} Title`} value={this.state.variants[i].title} onChange={(e) => this.handleVariantTitleChange(e, i)} />
+                        <div className='Tooltip'>
+                            <Tooltip  content="Version of the product. IE: Shirt-Size, Month, Season">
+                                <Link>Learn More</Link>
+                            </Tooltip>
+                        </div>
+                    </div>
+                    <div className='Flex Dynamic-Options'>
+                        <TextField placeholder={this.state.price} error={this.state.variants[i].errorPrice} label={`Variant ${i+1} Price`} type="number" value={this.state.variants[i].price} onChange={(e) => this.handleVariantPriceChange(e, i)} prefix="$" />
+                        <div className='Tooltip'>
+                            <Tooltip content="If you enable 'Auto Add Tax', tax will be added through Shopify. Otherwise you must include tax in the total price.">
+                                <Link>Learn More</Link>
+                            </Tooltip>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
 
 
         return(
@@ -444,8 +508,9 @@ export default class Products extends Component {
                             </Tooltip>
                         </div>
                     </div>
+                    <div>{addVariantSection}</div>
                 </div>
-                {!this.state.continue && <div className='Product-Submit'><Button primary onClick={this.submit}>Submit</Button></div>}
+                {!this.state.continue && <div className='Product-Submit'><div className='Submit'><Button primary onClick={this.submit}>Submit</Button></div><Button secondary onClick={this.addVariant}>Add Variant</Button></div>}
                 {this.state.loading && <div className='Product-Submit'><Spinner size="large" color="teal"/></div>}
                 {this.state.restart && <div className='Product-Submit'><Button primary onClick={this.continue}>Continue</Button></div>}
             </Page>

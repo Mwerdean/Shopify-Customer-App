@@ -65,6 +65,14 @@ app.post('/submitNewCustomer', (req, res) => {
               }
             )
         }
+        arr.push(
+            {
+                "key": 'credit',
+                "value": 0.0,
+                "value_type": 'integer',
+                "namespace": 'tax'
+            }
+        )
         return (
          arr   
         )
@@ -100,7 +108,26 @@ app.post('/submitProduct', (req, res) => {
                     "src": image
                 }
             ],
-            "variants": [
+            "variants": variants()
+        }
+    }
+    function variants() {
+        let arr = []
+        if(obj.variants.length > 1) {
+            for(i=0;i<obj.variants.length; i++) {
+                arr.push(
+                    {
+                        "option1": obj.variants[i].title,
+                        "price": obj.variants[i].price,
+                        "sku": obj.SKU,
+                        "taxable": JSON.parse(obj.tax),
+                        "inventory_management": `${obj['track-inventory'] !== 'false' ? 'shopify' : ''}`,
+                        "requires_shipping": JSON.parse(obj.tax),
+                    }
+                )
+            }
+        } else {
+            arr.push(
                 {
                     "option1": obj.title,
                     "price": obj.price,
@@ -109,27 +136,32 @@ app.post('/submitProduct', (req, res) => {
                     "inventory_management": `${obj['track-inventory'] !== 'false' ? 'shopify' : ''}`,
                     "requires_shipping": JSON.parse(obj.tax),
                 }
-            ]
+            )
         }
+        return(arr)
     }
     axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/products.json`, product).then(response => {
         console.log(res.data)
         console.log(response.data.product.variants[0].id)
-        const id = response.data.product.variants[0].inventory_item_id
+        let arr = []
+        for(let i = 0; i<response.data.product.variants.length; i++) {
+            arr.push(response.data.product.variants[i].inventory_item_id)
+        }
         res.send('ok')
-
         if(obj['track-inventory'] !== 'false') {
-            axios.get(`https://${sk}:${ss}@${store}.myshopify.com/admin/inventory_levels.json?inventory_item_ids=${id}`).then(response => {
-                console.log(response.data)
-                const inventory = {
-                    "inventory_item_id": id,
-                    "available": obj.stock,
-                    "location_id": response.data.inventory_levels[0].location_id
-                }
-                axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/inventory_levels/set.json`, inventory).then(response => {
+            for(let i = 0; i<arr.length; i++) {
+                axios.get(`https://${sk}:${ss}@${store}.myshopify.com/admin/inventory_levels.json?inventory_item_ids=${arr[i]}`).then(response => {
                     console.log(response.data)
-                }).catch(error => console.log('get product error', error))
-            })
+                    const inventory = {
+                        "inventory_item_id": arr[i],
+                        "available": obj.stock,
+                        "location_id": response.data.inventory_levels[0].location_id
+                    }
+                    axios.post(`https://${sk}:${ss}@${store}.myshopify.com/admin/inventory_levels/set.json`, inventory).then(response => {
+                        console.log(response.data)
+                    }).catch(error => console.log('get product error', error))
+                })
+            }
         }
     }).catch(error => console.log('get product error', error))
 })

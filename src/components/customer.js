@@ -25,9 +25,7 @@ class Customer extends Component {
     errorFirst: '',
     errorLast: '',
     errorEmail: '',
-    errorStudentName: '',
-    errorGrade: '',
-    errorSchool: ''
+
   }
 
   handleChange = (value) => {
@@ -74,7 +72,7 @@ class Customer extends Component {
     } 
     this.setState({ studentCount: this.state.studentCount + 1})
     let arr = this.state.dynamicArr
-    arr.push({id: this.state.studentCount, value: '', grade: '', school: ''})
+    arr.push({id: this.state.studentCount, value: '', grade: '', school: '', errorSchool: '', errorGrade: '', errorStudentName: ''})
     this.setState({dynamicArr: arr})
     console.log(this.state.dynamicArr)
   
@@ -90,13 +88,14 @@ class Customer extends Component {
   }
 
   handleDynamicChange = (e, i) => {
+    console.log(e)
     let arr = this.state.dynamicArr
-    arr[i].value = e.target.value
+    arr[i].value = e
     this.setState({dynamicArr: arr}, () => console.log(this.state.dynamicArr))
   }
 
   handleSubmit = () => {
-    this.setState({ errorFirst: '', errorLast: '', errorEmail: '', errorGrade: '', errorSchool: '', errorStudentName: ''})
+    this.setState({ errorFirst: '', errorLast: '', errorEmail: ''})
     let canSubmit = true
     if(!this.state.value) {
       this.setState({ errorFirst: 'Please enter a first name' })
@@ -112,16 +111,25 @@ class Customer extends Component {
     }
     if(this.state.dynamicArr.length > 0) {
       for(let i = 0; i<this.state.dynamicArr.length; i++) {
+        let arr = this.state.dynamicArr
+        arr[i].errorStudentName = ''
+        arr[i].errorSchool = ''
+        arr[i].errorGrade = ''
+        this.setState({ dynamicArr: arr })
+
         if(!this.state.dynamicArr[i].value) {
-          this.setState({ errorStudentName: 'Please enter a student name'})
+          arr[i].errorStudentName = 'Please enter a student name'
+          this.setState({ dynamicArr: arr })
           canSubmit = false
         }
         if(!this.state.dynamicArr[i].school) {
-          this.setState({ errorSchool: 'Please enter a school'})
+          arr[i].errorSchool = 'Please enter a school'
+          this.setState({ dynamicArr: arr })
           canSubmit = false
         }
         if(!this.state.dynamicArr[i].grade) {
-          this.setState({ errorGrade: 'Please enter a grade'})
+          arr[i].errorGrade = 'Please enter a grade'
+          this.setState({ dynamicArr: arr })
           canSubmit = false
         }
       }
@@ -163,12 +171,12 @@ class Customer extends Component {
       {label: '4th Grade', value: '4'},
       {label: '5th Grade', value: '5'},
       {label: '6th Grade', value: '6'},
-      {label: '6th Grade', value: '7'},
-      {label: '6th Grade', value: '8'},
-      {label: '6th Grade', value: '9'},
-      {label: '6th Grade', value: '10'},
-      {label: '6th Grade', value: '11'},
-      {label: '6th Grade', value: '12'},
+      {label: '7th Grade', value: '7'},
+      {label: '8th Grade', value: '8'},
+      {label: '9th Grade', value: '9'},
+      {label: '10th Grade', value: '10'},
+      {label: '11th Grade', value: '11'},
+      {label: '12th Grade', value: '12'},
     ];
     const options2 = [
       {label: 'Select a school', value: ''},
@@ -188,7 +196,7 @@ class Customer extends Component {
             <Card sectioned>
               <FormLayout>
                 <div className='Flex Dynamic-Options'>
-                  <TextField label="Enter Student Name" value={this.state.dynamicArr[i].value} onChange={e=> this.handleDynamicChange(e, i)} error={this.state.errorStudentName} />
+                  <TextField label="Enter Student Name" value={this.state.dynamicArr[i].value} onChange={e=> this.handleDynamicChange(e, i)} error={this.state.dynamicArr[i].errorStudentName} />
                   <div className='Close'>
                     <div onClick={e => this.cancelStudent(e, i)} className="X">X</div>
                   </div>
@@ -199,7 +207,7 @@ class Customer extends Component {
                     options={options}
                     onChange={(e) => this.handleSelectGradeChange(e, i)}
                     value={this.state.dynamicArr[i].grade}
-                    error={this.state.errorGrade}
+                    error={this.state.dynamicArr[i].errorGrade}
                   />
                 </div>
                 <div className='Add-Student-Select'>
@@ -208,7 +216,7 @@ class Customer extends Component {
                     options={options2}
                     onChange={(e) => this.handleSelectSchoolChange(e, i)}
                     value={this.state.dynamicArr[i].school}
-                    error={this.state.errorSchool}
+                    error={this.state.dynamicArr[i].errorSchool}
                   />
                 </div>
               </FormLayout>
